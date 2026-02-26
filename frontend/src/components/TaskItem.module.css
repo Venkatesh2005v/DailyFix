@@ -1,0 +1,114 @@
+.card {
+    position: relative;
+    background: #1e1e1e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    overflow: hidden;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.priorityIndicator {
+    width: 4px;
+    flex-shrink: 0;
+}
+
+.priorityIndicator.high {
+    background-color: #ef4444;
+}
+
+.priorityIndicator.medium {
+    background-color: #f59e0b;
+}
+
+.priorityIndicator.low {
+    background-color: #10b981;
+}
+
+.mainContent {
+    padding: 16px;
+    flex-grow: 1;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.titleArea {
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.timestamp {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.description {
+    font-size: 0.9rem;
+    color: #ccc;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.sourceInfo {
+    margin-bottom: 16px;
+    color: #666;
+}
+
+/* --- BUTTON GROUP STYLING --- */
+.buttonGroup {
+    display: flex;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.buttonGroup button {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.aiBtn {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+    flex: 2;
+    /* AI button stands out more */
+}
+
+.completeBtn {
+    background: #059669;
+    color: white;
+    flex: 1;
+}
+
+.dismissBtn {
+    background: #374151;
+    color: white;
+    flex: 1;
+}
+
+.buttonGroup button:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+}
+
+.buttonGroup button:active {
+    transform: translateY(0);
+}

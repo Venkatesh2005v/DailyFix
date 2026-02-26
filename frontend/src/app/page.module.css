@@ -1,0 +1,47 @@
+.main {
+    min-height: 100vh;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(to right, #fff, #999);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.inbox {
+    margin-top: 4rem;
+}
+
+.sectionTitle {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    border-bottom: 1px solid var(--border-glass);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+}
+
+.taskList {
+    display: grid;
+    gap: 1rem;
+}

@@ -1,0 +1,91 @@
+.container {
+    position: relative;
+    z-index: 50;
+}
+
+.avatarBtn {
+    background: none;
+    border: 2px solid var(--color-indigo);
+    border-radius: 50%;
+    padding: 2px;
+    cursor: pointer;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.avatarBtn:hover {
+    box-shadow: 0 0 10px var(--color-indigo-glow);
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.dropdown {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    width: 200px;
+    background: var(--bg-obsidian);
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    padding: 0.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.userInfo {
+    padding: 0.8rem;
+}
+
+.userName {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.userEmail {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.divider {
+    height: 1px;
+    background: var(--border-glass);
+    margin: 0.5rem 0;
+}
+
+.menuItem {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+    background: none;
+    border: none;
+    text-decoration: none;
+}
+
+.menuItem:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.logout {
+    color: var(--priority-high);
+}
+
+.logout:hover {
+    background: rgba(244, 63, 94, 0.1);
+}

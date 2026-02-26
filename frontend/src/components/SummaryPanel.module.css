@@ -1,0 +1,52 @@
+.panel {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    padding: 2rem;
+    flex: 1;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+/* Variants */
+.indigo {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.15);
+}
+
+.slate {
+    background: rgba(30, 41, 59, 0.4);
+    border-color: rgba(148, 163, 184, 0.2);
+}
+
+.title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-indigo);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.content {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-family: 'Courier New', monospace;
+    /* Executive tech feel */
+    flex-grow: 1;
+}
+
+/* Variant Specific Text Colors */
+.indigo .title {
+    color: #818cf8;
+}
+
+.slate .title {
+    color: #94a3b8;
+}

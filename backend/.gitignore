@@ -1,0 +1,14 @@
+# Ignore IntelliJ/Java junk
+backend/target/
+backend/.idea/
+backend/*.iml
+
+# Ignore Node/Next.js junk (This is the most important part!)
+frontend/node_modules/
+frontend/.next/
+frontend/.env
+frontend/.env.local
+
+# General
+.DS_Store
+Thumbs.db
