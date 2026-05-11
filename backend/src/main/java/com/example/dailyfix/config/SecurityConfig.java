@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -69,7 +70,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // Allow the Antigravity frontend origin
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(Arrays.asList("https://dailyfix.vercel.app"));
 
         // Essential: Allow cookies to be sent from port 3000 to port 8080
         config.setAllowCredentials(true);
