@@ -4,7 +4,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Step 2: Use a lightweight Java runtime to run the JAR
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:21-jre-jammy
 COPY --from=build /target/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
