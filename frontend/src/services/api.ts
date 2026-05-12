@@ -1,29 +1,31 @@
 import axios from 'axios';
 
-// When using Vercel Rewrites, we use a relative path.
-// This tells the browser: "Send this to the Vercel server I'm currently on."
 export const API_URL = '';
 
 const api = axios.create({
-    // Vercel will see '/api' and proxy it to Render for you.
     baseURL: '/api',
-    withCredentials: true, // Absolute requirement for JSESSIONID cookies
+    withCredentials: true,
 });
 
 api.interceptors.response.use(
     (response) => response,
     (error) => {
         const originalRequest = error.config;
+        const isAuthCheck = originalRequest?.url?.includes('/user/me');
+        const isLandingPage = typeof window !== 'undefined' && window.location.pathname === '/';
 
-        // Prevent loop: If the error IS from the 'me' endpoint, don't redirect again
-        if (error.response?.status === 401 && originalRequest?.url && !originalRequest.url.includes('/user/me')) {
+        // 1. If we are on the landing page, NEVER redirect (prevents the loop)
+        if (isLandingPage) {
+            return Promise.reject(error);
+        }
+
+        // 2. If it's a 401 and NOT the initial auth check, send them home
+        if (error.response?.status === 401 && !isAuthCheck) {
             if (typeof window !== 'undefined') {
-                // Only redirect if NOT already on the landing page
-                if (window.location.pathname !== '/') {
-                    window.location.href = '/';
-                }
+                window.location.href = '/';
             }
         }
+
         return Promise.reject(error);
     }
 );
