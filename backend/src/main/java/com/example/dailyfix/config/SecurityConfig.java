@@ -26,7 +26,7 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
 
-    @Value("${app.frontend.url:http://localhost:3000}")
+    @Value("${APP_FRONTEND_URL:http://localhost:3000}")
     private String frontendUrl;
 
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
