@@ -27,6 +27,7 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
 
+    // Uses the Render environment variable APP_FRONTEND_URL
     @Value("${APP_FRONTEND_URL:http://localhost:3000}")
     private String frontendUrl;
 
@@ -34,6 +35,10 @@ public class SecurityConfig {
         this.customOAuth2UserService = customOAuth2UserService;
     }
 
+    /**
+     * Forces the JSESSIONID cookie to include 'SameSite=None' and 'Secure'.
+     * This is mandatory for cross-domain authentication (Vercel to Render).
+     */
     @Bean
     public CookieSameSiteSupplier applicationCookieSameSiteSupplier() {
         return CookieSameSiteSupplier.ofNone().whenHasName("JSESSIONID");
@@ -56,7 +61,6 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login/**", "/oauth2/**", "/api/user/me").permitAll()
                         .anyRequest().authenticated()
                 )
-
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
@@ -64,14 +68,17 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo
                                 .oidcUserService(customOAuth2UserService)
                         )
-                        // Dynamically redirects to /dashboard based on environment
+                        // Redirects to Vercel dashboard upon successful login
                         .defaultSuccessUrl(frontendUrl + "/dashboard", true)
                 )
                 .logout(logout -> logout
-                        // Dynamically redirects to home page based on environment
                         .logoutSuccessUrl(frontendUrl + "/")
                         .deleteCookies("JSESSIONID")
                         .invalidateHttpSession(true)
+                )
+                .sessionManagement(session -> session
+                        // Ensures the session is properly linked to the user before redirecting
+                        .sessionFixation().migrateSession()
                 );
 
         return http.build();
@@ -81,17 +88,14 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Update this to your ACTUAL Vercel URL
-        // Note: Remove the trailing slash at the end
-        config.setAllowedOrigins(Arrays.asList("https://daily-fix-six.vercel.app"));
+        // Allows your specific Vercel frontend to communicate with the Render backend
+        config.setAllowedOrigins(Arrays.asList(frontendUrl, "https://daily-fix-six.vercel.app"));
 
-        // Essential for OAuth2 and session cookies
+        // Allows the browser to send JSESSIONID cookies back and forth
         config.setAllowCredentials(true);
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control", "X-Requested-With"));
-
-        // Expose headers so the frontend can read cookies if necessary
         config.setExposedHeaders(List.of("Set-Cookie"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
