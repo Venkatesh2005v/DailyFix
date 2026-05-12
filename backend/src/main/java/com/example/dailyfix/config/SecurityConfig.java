@@ -69,16 +69,17 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Allow the Antigravity frontend origin
-        config.setAllowedOrigins(Arrays.asList("https://dailyfix.vercel.app"));
+        // Update this to your ACTUAL Vercel URL
+        // Note: Remove the trailing slash at the end
+        config.setAllowedOrigins(Arrays.asList("https://daily-fix-six.vercel.app"));
 
-        // Essential: Allow cookies to be sent from port 3000 to port 8080
+        // Essential for OAuth2 and session cookies
         config.setAllowCredentials(true);
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control", "X-Requested-With"));
 
-        // Optional: Expose headers if needed for frontend logic
+        // Expose headers so the frontend can read cookies if necessary
         config.setExposedHeaders(List.of("Set-Cookie"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
