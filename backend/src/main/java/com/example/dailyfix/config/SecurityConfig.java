@@ -1,6 +1,7 @@
 package com.example.dailyfix.config;
 
 import com.example.dailyfix.service.CustomOAuth2UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,9 @@ import java.util.List;
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
+
+    @Value("${app.frontend.url:http://localhost:3000}")
+    private String frontendUrl;
 
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
         this.customOAuth2UserService = customOAuth2UserService;
@@ -54,10 +58,12 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo
                                 .oidcUserService(customOAuth2UserService)
                         )
-                        .defaultSuccessUrl("http://localhost:3000/dashboard", true)
+                        // Dynamically redirects to /dashboard based on environment
+                        .defaultSuccessUrl(frontendUrl + "/dashboard", true)
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("http://localhost:3000/")
+                        // Dynamically redirects to home page based on environment
+                        .logoutSuccessUrl(frontendUrl + "/")
                         .deleteCookies("JSESSIONID")
                         .invalidateHttpSession(true)
                 );
