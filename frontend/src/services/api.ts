@@ -10,24 +10,17 @@ const api = axios.create({
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        const originalRequest = error.config;
-        const isAuthCheck = originalRequest?.url?.includes('/user/me');
-        const isLandingPage = typeof window !== 'undefined' && window.location.pathname === '/';
+        const url = error.config?.url || "";
+        // 1. Define "Safe" endpoints that should NEVER trigger a redirect loop
+        const isAuthCheck = url.includes('/user/me') || url.includes('/dashboard/stats');
+        const isLandingPage = window.location.pathname === '/';
 
-        // 1. If we are on the landing page, NEVER redirect (prevents the loop)
-        if (isLandingPage) {
-            return Promise.reject(error);
-        }
-
-        // 2. If it's a 401 and NOT the initial auth check, send them home
-        if (error.response?.status === 401 && !isAuthCheck) {
-            if (typeof window !== 'undefined') {
-                window.location.href = '/';
-            }
+        // 2. ONLY redirect if it's a 401 AND it's NOT an auth check AND we aren't already home
+        if (error.response?.status === 401 && !isAuthCheck && !isLandingPage) {
+            window.location.href = '/';
         }
 
         return Promise.reject(error);
     }
 );
-
 export default api;
