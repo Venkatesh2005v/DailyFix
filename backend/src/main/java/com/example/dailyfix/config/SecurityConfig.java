@@ -2,6 +2,7 @@ package com.example.dailyfix.config;
 
 import com.example.dailyfix.service.CustomOAuth2UserService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.server.servlet.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,11 @@ public class SecurityConfig {
 
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
         this.customOAuth2UserService = customOAuth2UserService;
+    }
+
+    @Bean
+    public CookieSameSiteSupplier applicationCookieSameSiteSupplier() {
+        return CookieSameSiteSupplier.ofNone().whenHasName("JSESSIONID");
     }
 
     @Bean
