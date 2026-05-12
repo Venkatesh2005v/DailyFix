@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { User } from '@/types';
+import { API_URL } from '@/services/api';
 import styles from './UserProfile.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -17,7 +18,7 @@ export default function UserProfile({ user }: UserProfileProps) {
 
     const handleLogout = () => {
         // Redirect to Spring Boot logout
-        window.location.href = 'http://localhost:8080/logout';
+        window.location.href = `${API_URL}/logout`;
     };
 
     return (

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { Task } from '@/types';
+import { API_URL } from '@/services/api';
 import styles from './DashboardGrid.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import TaskItem from '@/components/TaskItem';
@@ -50,12 +51,12 @@ export default function DashboardGrid({ highPriorityTasks, stats, onRefresh }: D
     const handleGenerate = async (task: Task) => {
         if (!window.confirm("Initialize Intelligence Draft?")) return;
         try {
-            const res = await fetch(`http://localhost:8080/api/tasks/${task.id}/generate-reply`, {
+            const res = await fetch(`${API_URL}/api/tasks/${task.id}/generate-reply`, {
                 method: 'GET',
                 credentials: 'include'
             });
             if (res.status === 401) {
-                window.location.href = "http://localhost:8080/oauth2/authorization/google";
+                window.location.href = `${API_URL}/oauth2/authorization/google`;
                 return;
             }
             const data = await res.json();
@@ -71,7 +72,7 @@ export default function DashboardGrid({ highPriorityTasks, stats, onRefresh }: D
         if (!replyTask) return;
         setIsSending(true);
         try {
-            const res = await fetch(`http://localhost:8080/api/tasks/${replyTask.id}/send-reply`, {
+            const res = await fetch(`${API_URL}/api/tasks/${replyTask.id}/send-reply`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
