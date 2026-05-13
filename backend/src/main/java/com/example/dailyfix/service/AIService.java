@@ -35,6 +35,11 @@ public class AIService {
 
     private String callGemini(String prompt) {
         try {
+
+            if (prompt == null || prompt.isBlank()) {
+                return "No content available for analysis.";
+            }
+
             Map<String, Object> requestBody = Map.of(
                     "contents", List.of(Map.of(
                             "parts", List.of(Map.of("text", prompt))
@@ -42,31 +47,41 @@ public class AIService {
             );
 
             Map<String, Object> response = restClient.post()
-                    .uri(apiUrl + "?key=" + apiKey) // Ensure apiUrl does NOT have a ? already
+                    .uri(apiUrl + "?key=" + apiKey)
                     .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
                     .body(requestBody)
                     .retrieve()
-                    .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), (request, resp) -> {
-                        System.out.println("Gemini API Error: " + resp.getStatusCode());
-                    })
                     .body(Map.class);
+
+            System.out.println("Gemini Response: " + response);
 
             if (response == null || !response.containsKey("candidates")) {
                 return "Intelligence gathering... No insights found.";
             }
 
-            List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.get("candidates");
-            if (candidates.isEmpty()) return "No situational updates available.";
+            List<Map<String, Object>> candidates =
+                    (List<Map<String, Object>>) response.get("candidates");
+
+            if (candidates.isEmpty()) {
+                return "No situational updates available.";
+            }
 
             Map<String, Object> firstCandidate = candidates.get(0);
-            Map<String, Object> content = (Map<String, Object>) firstCandidate.get("content");
-            List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
+
+            Map<String, Object> content =
+                    (Map<String, Object>) firstCandidate.get("content");
+
+            List<Map<String, Object>> parts =
+                    (List<Map<String, Object>>) content.get("parts");
 
             return parts.get(0).get("text").toString().trim();
 
         } catch (Exception e) {
+
             System.err.println("Gemini Integration Failed: " + e.getMessage());
             e.printStackTrace();
+
             return "Intelligence offline. Manual review required.";
         }
     }
