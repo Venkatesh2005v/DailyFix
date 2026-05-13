@@ -2,7 +2,7 @@
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "https://dailyfix-ld2d.onrender.com/api/:path*"
+            "destination": "https://dailyfix-backend-15uv.onrender.com/api/:path*"
         }
     ]
 }
