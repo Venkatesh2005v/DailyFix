@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/messages")
@@ -22,7 +24,10 @@ public class MessageController {
     @PostMapping("/sync")
     public ResponseEntity<String> triggerSync(Authentication authentication) {
         messageService.fetchAndProcessGmail(authentication);
-        return ResponseEntity.ok("Gemini AI sync started in the background! Refresh in 30 seconds.");
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Intelligence sync initiated."
+        ).toString());
     }
 
     @GetMapping("/my-messages")
