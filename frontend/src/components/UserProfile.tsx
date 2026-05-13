@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { User } from '@/types';
 import styles from './UserProfile.module.css';
 
-const BACKEND_URL = 'https://dailyfix-ld2d.onrender.com';
+const BACKEND_URL = 'https://dailyfix-backend-15uv.onrender.com';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface UserProfileProps {

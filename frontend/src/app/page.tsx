@@ -2,7 +2,7 @@
 
 import styles from './landing.module.css';
 
-const BACKEND_URL = 'https://dailyfix-ld2d.onrender.com';
+const BACKEND_URL = 'https://dailyfix-backend-15uv.onrender.com';
 
 export default function LandingPage() {
     const handleLogin = () => {

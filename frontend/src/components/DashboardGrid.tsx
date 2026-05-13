@@ -5,7 +5,7 @@ import { Task } from '@/types';
 import { api } from '@/services/api';
 import styles from './DashboardGrid.module.css';
 
-const BACKEND_URL = 'https://dailyfix-ld2d.onrender.com';
+const BACKEND_URL = 'https://dailyfix-backend-15uv.onrender.com';
 import { motion, AnimatePresence } from 'framer-motion';
 import TaskItem from '@/components/TaskItem';
 
