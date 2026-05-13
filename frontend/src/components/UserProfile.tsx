@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { User } from '@/types';
+import { useAuth } from '@/context/AuthContext';
 import styles from './UserProfile.module.css';
-
-const BACKEND_URL = 'https://dailyfix-backend-15uv.onrender.com';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface UserProfileProps {
@@ -12,14 +11,15 @@ interface UserProfileProps {
 }
 
 export default function UserProfile({ user }: UserProfileProps) {
+    const { logout } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
 
     // Fallback avatar if api fails or invalid url
     const avatar = user.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff`;
 
     const handleLogout = () => {
-        // Redirect to Spring Boot logout
-        window.location.href = `${BACKEND_URL}/logout`;
+        // Clear all local auth state and return to login page
+        logout();
     };
 
     return (

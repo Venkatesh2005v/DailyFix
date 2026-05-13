@@ -5,13 +5,23 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './QuickActionsFab.module.css';
 
 interface QuickActionsFabProps {
-    onRefresh: () => void;
-    onCleanup: () => void;
+    onRefresh: () => void | Promise<void>;
+    onCleanup: () => void | Promise<void>;
     onNewTask: () => void;
 }
 
 export default function QuickActionsFab({ onRefresh, onCleanup, onNewTask }: QuickActionsFabProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
+    const handleRefresh = async () => {
+        setIsRefreshing(true);
+        try {
+            await onRefresh();
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
 
     return (
         <div className={styles.container}>
@@ -25,7 +35,20 @@ export default function QuickActionsFab({ onRefresh, onCleanup, onNewTask }: Qui
                     >
                         <button onClick={onNewTask} className={styles.actionBtn}>New Task 📝</button>
                         <button onClick={onCleanup} className={styles.actionBtn}>Cleanup 🧹</button>
-                        <button onClick={onRefresh} className={styles.actionBtn}>Refresh AI 🔄</button>
+                        <button
+                            onClick={handleRefresh}
+                            className={`${styles.actionBtn} ${isRefreshing ? styles.refreshing : ''}`}
+                            disabled={isRefreshing}
+                        >
+                            {isRefreshing ? (
+                                <>
+                                    <span className={styles.spinner} />
+                                    Syncing...
+                                </>
+                            ) : (
+                                'Refresh AI 🔄'
+                            )}
+                        </button>
                     </motion.div>
                 )}
             </AnimatePresence>

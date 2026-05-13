@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 import DashboardGrid from '@/components/DashboardGrid';
 import QuickActionsFab from '@/components/QuickActionsFab';
 import UserProfile from '@/components/UserProfile';
@@ -15,6 +16,9 @@ export default function Dashboard() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [dataLoading, setDataLoading] = useState(true);
+
+    // Track previous task count to detect AI-generated additions
+    const prevTaskCount = useRef<number | null>(null);
     const [stats, setStats] = useState<DashboardStats>({
         totalMails: 0,
         urgentCount: 0,
@@ -38,11 +42,23 @@ export default function Dashboard() {
 
         setDataLoading(true);
         try {
-            const [fetchedTasks, fetchedStats] = await Promise.all([
-                taskService.getMyTasks(null),
-                dashboardService.getStats(email)
-            ]);
-            setTasks(fetchedTasks || []);
+            const fetchedTasks = (await taskService.getMyTasks(null)) || [];
+            const fetchedStats = await dashboardService.getStats(email);
+
+            // Toast alert when AI generates new tasks in the background
+            if (prevTaskCount.current !== null && fetchedTasks.length > prevTaskCount.current) {
+                toast.success('New AI-generated task added!', {
+                    icon: '🤖',
+                    style: {
+                        background: '#1e1b4b',
+                        color: '#e0e7ff',
+                        border: '1px solid #6366f1',
+                    },
+                });
+            }
+            prevTaskCount.current = fetchedTasks.length;
+
+            setTasks(fetchedTasks);
             setStats(fetchedStats);
             lastFetchedEmail.current = email;
         } catch (error) {
@@ -140,6 +156,9 @@ export default function Dashboard() {
                     loadData();
                 }}
             />
+
+            {/* Global toast notifications */}
+            <Toaster position="top-right" />
         </div>
     );
 }
