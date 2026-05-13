@@ -23,41 +23,55 @@ export default function Dashboard() {
     });
 
     const loadData = useCallback(async () => {
-        if (!user?.email) return;
+        // Fallback: If context isn't ready, try to get email from localStorage/Token
+        const token = localStorage.getItem('jwt_token');
+        const effectiveEmail = user?.email || (token ? "current-session" : null);
+
+        if (!effectiveEmail) {
+            console.warn("No authentication found. Aborting fetch.");
+            return;
+        }
+
         try {
+            console.log("Fetching intelligence for:", effectiveEmail);
+            // NOTE: getStats(null) works if your backend extracts email from JWT
             const [fetchedTasks, fetchedStats] = await Promise.all([
                 taskService.getMyTasks(null),
-                dashboardService.getStats(user.email)
+                dashboardService.getStats(user?.email || "")
             ]);
+
             setTasks(fetchedTasks || []);
             setStats(fetchedStats);
         } catch (error) {
-            console.error("Dashboard data fetch failed", error);
+            console.error("Secure Stream Fetch Failed:", error);
         }
     }, [user?.email]);
 
     useEffect(() => {
-        if (user) loadData();
+        // Trigger if user context loads OR if we have a token in storage
+        if (user || localStorage.getItem('jwt_token')) {
+            loadData();
+        }
     }, [user, loadData]);
 
     const handleTaskAction = async (taskId?: number) => {
         if (taskId) {
-            // Optimistic UI: remove immediately so animation starts
             setTasks(prev => prev.filter(t => t.id !== taskId));
             try {
-                // Background sync with Spring Boot
                 await taskService.complete(taskId);
                 const updatedStats = await dashboardService.getStats(user?.email!);
                 setStats(updatedStats);
             } catch (error) {
-                loadData(); // Rollback if backend fails
+                loadData();
             }
         } else {
             loadData();
         }
     };
 
-    if (userLoading) return <div className={styles.loading}>Accessing Secure Stream...</div>;
+    if (userLoading && !localStorage.getItem('jwt_token')) {
+        return <div className={styles.loading}>Accessing Secure Stream...</div>;
+    }
 
     return (
         <div className={styles.dashboardWrapper}>
