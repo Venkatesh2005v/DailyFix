@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { AuthProvider } from '@/context/AuthContext';
+// wrap your existing children with <AuthProvider>...</AuthProvider>
 import './globals.css';
 
 export const metadata: Metadata = {

@@ -1,11 +1,12 @@
 "use client";
 
 import styles from './landing.module.css';
-import { API_URL } from '@/services/api';
+
+const BACKEND_URL = 'https://dailyfix-ld2d.onrender.com';
 
 export default function LandingPage() {
     const handleLogin = () => {
-        window.location.href = `${API_URL}/oauth2/authorization/google`;
+        window.location.href = `${BACKEND_URL}/oauth2/authorization/google`;
     };
 
     return (

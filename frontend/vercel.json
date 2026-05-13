@@ -3,14 +3,6 @@
         {
             "source": "/api/:path*",
             "destination": "https://dailyfix-ld2d.onrender.com/api/:path*"
-        },
-        {
-            "source": "/login/:path*",
-            "destination": "https://dailyfix-ld2d.onrender.com/login/:path*"
-        },
-        {
-            "source": "/oauth2/:path*",
-            "destination": "https://dailyfix-ld2d.onrender.com/oauth2/:path*"
         }
     ]
 }
