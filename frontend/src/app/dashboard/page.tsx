@@ -25,17 +25,28 @@ export default function Dashboard() {
 
 
     const loadData = useCallback(async () => {
-        console.log('loadData fired with email:', user?.email);
-        if (!user?.email) return;
+        // 1. Get the token directly from storage as a fallback
+        const token = localStorage.getItem('jwt_token');
+
+        // 2. If we don't have a user email OR a token, then we stop. 
+        // Otherwise, let the API call proceed because the Interceptor will add the Bearer token anyway.
+        if (!user?.email && !token) {
+            console.warn("No auth session found.");
+            return;
+        }
+
         try {
+            console.log("Fetching intelligence stream...");
             const [fetchedTasks, fetchedStats] = await Promise.all([
                 taskService.getMyTasks(null),
-                dashboardService.getStats(user.email)
+                // Pass null or empty string; your backend should extract email from the JWT sub
+                dashboardService.getStats("")
             ]);
+
             setTasks(fetchedTasks || []);
             setStats(fetchedStats);
         } catch (error) {
-            console.error("Dashboard data fetch failed", error);
+            console.error("Fetch failed:", error);
         }
     }, [user?.email]);
 
