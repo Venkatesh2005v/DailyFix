@@ -24,10 +24,7 @@ public class MessageController {
     @PostMapping("/sync")
     public ResponseEntity<String> triggerSync(Authentication authentication) {
         messageService.fetchAndProcessGmail(authentication);
-        return ResponseEntity.ok(Map.of(
-                "status", "success",
-                "message", "Intelligence sync initiated."
-        ).toString());
+        return ResponseEntity.ok("Starting Intelligence Sync For :" + authentication.getName());
     }
 
     @GetMapping("/my-messages")
