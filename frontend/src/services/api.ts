@@ -1,9 +1,8 @@
 // services/api.ts
 
-const BASE_URL = '/api'; // Vercel proxy handles routing to Render — no env var needed
+const BASE_URL = '/api';
 
 async function getHeaders(): Promise<HeadersInit> {
-    // Guard for SSR — localStorage only exists in browser
     const token = typeof window !== 'undefined'
         ? localStorage.getItem('jwt_token')
         : null;
@@ -15,6 +14,7 @@ async function getHeaders(): Promise<HeadersInit> {
 }
 
 async function handleResponse(res: Response) {
+    // 1. Handle Authentication Errors
     if (res.status === 401) {
         if (typeof window !== 'undefined' && window.location.pathname !== '/') {
             localStorage.removeItem('jwt_token');
@@ -22,8 +22,32 @@ async function handleResponse(res: Response) {
         }
         throw new Error('Unauthorized');
     }
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
-    return res.json();
+
+    // 2. Capture the Raw Text to prevent the "Unexpected token" crash
+    const rawText = await res.text();
+
+    // 3. Handle Server Errors (500, 404, etc.)
+    if (!res.ok) {
+        console.error("Backend Error Output:", rawText);
+        throw new Error(`API error: ${res.status} - ${rawText}`);
+    }
+
+    // 4. Safe JSON Parsing
+    try {
+        return JSON.parse(rawText);
+    } catch (err) {
+        // If parsing fails, it means the backend sent the raw Gemini string instead of a JSON object
+        console.error("CRITICAL: Backend sent raw text instead of JSON. Output:", rawText);
+
+        // Return a mock object so the dashboard doesn't crash, but you can see the error in the UI
+        return {
+            totalMails: 0,
+            urgentCount: 0,
+            taskCount: 0,
+            urgentSummary: rawText, // Put the 'G' string here so it shows in your dashboard panel
+            normalSummary: "Sync failed - see console."
+        };
+    }
 }
 
 export const api = {
