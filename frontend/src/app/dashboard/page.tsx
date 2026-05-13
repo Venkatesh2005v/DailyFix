@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import DashboardGrid from '@/components/DashboardGrid';
 import QuickActionsFab from '@/components/QuickActionsFab';
 import UserProfile from '@/components/UserProfile';
@@ -14,6 +14,7 @@ export default function Dashboard() {
     const { user, loading: userLoading } = useAuth();
     const [tasks, setTasks] = useState<Task[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [dataLoading, setDataLoading] = useState(true);
     const [stats, setStats] = useState<DashboardStats>({
         totalMails: 0,
         urgentCount: 0,
@@ -22,56 +23,67 @@ export default function Dashboard() {
         normalSummary: "Reviewing task directives..."
     });
 
-    const loadData = useCallback(async () => {
-        const token = localStorage.getItem('jwt_token');
+    // Tracks the email used for the last successful fetch
+    // so we never double-fetch for the same email
+    const lastFetchedEmail = useRef<string | null>(null);
 
-        // If we have no token and no user, we can't fetch anything
-        if (!token && !user?.email) {
-            console.log("Waiting for authentication...");
-            return;
-        }
+    const loadData = useCallback(async (emailOverride?: string) => {
+        // Use override → context email → localStorage decode (fallback)
+        const email = emailOverride || user?.email || getEmailFromToken();
+        if (!email) return;
 
+        // Don't re-fetch if already loaded for this email
+        // (override bypasses this check so manual refresh always works)
+        if (!emailOverride && lastFetchedEmail.current === email) return;
+
+        setDataLoading(true);
         try {
-            console.log("Fetching intelligence stream...");
-            // Call both services. Pass the email if available, 
-            // but the backend should ideally extract it from the JWT sub.
             const [fetchedTasks, fetchedStats] = await Promise.all([
                 taskService.getMyTasks(null),
-                dashboardService.getStats(user?.email || "")
+                dashboardService.getStats(email)
             ]);
-
-            console.log("Data Received:", fetchedStats);
             setTasks(fetchedTasks || []);
-            setStats(fetchedStats); // This updates the numeric stats AND summaries
+            setStats(fetchedStats);
+            lastFetchedEmail.current = email;
         } catch (error) {
-            console.error("Fetch failed:", error);
+            console.error('Dashboard data fetch failed:', error);
+        } finally {
+            setDataLoading(false);
         }
     }, [user?.email]);
 
-    // Ensure this triggers on mount
+    // Aggressive load: fires immediately using token,
+    // then re-fires when AuthContext finishes loading user
     useEffect(() => {
-        loadData();
-    }, [loadData]);
+        if (userLoading) return;
 
+        const email = user?.email || getEmailFromToken();
+        if (email) {
+            loadData(email);
+        }
+    }, [userLoading, user?.email, loadData]);
 
     const handleTaskAction = async (taskId?: number) => {
+        const email = user?.email || getEmailFromToken();
         if (taskId) {
-            // Optimistic UI: remove immediately so animation starts
             setTasks(prev => prev.filter(t => t.id !== taskId));
             try {
-                // Background sync with Spring Boot
                 await taskService.complete(taskId);
-                const updatedStats = await dashboardService.getStats(user?.email!);
-                setStats(updatedStats);
-            } catch (error) {
-                loadData(); // Rollback if backend fails
+                if (email) {
+                    const updatedStats = await dashboardService.getStats(email);
+                    setStats(updatedStats);
+                }
+            } catch {
+                loadData();
             }
         } else {
             loadData();
         }
     };
 
-    if (userLoading) return <div className={styles.loading}>Accessing Secure Stream...</div>;
+    if (userLoading && dataLoading) {
+        return <div className={styles.loading}>Accessing Secure Stream...</div>;
+    }
 
     return (
         <div className={styles.dashboardWrapper}>
@@ -79,7 +91,9 @@ export default function Dashboard() {
                 <div className={styles.headerContent}>
                     <div>
                         <h1 className={styles.title}>DAILY FIX</h1>
-                        <p className={styles.userGreeting}>Welcome, {user?.name || 'Agent'}</p>
+                        <p className={styles.userGreeting}>
+                            Welcome, {user?.name || 'Agent'}
+                        </p>
                         <div className={styles.statusBadge}>
                             <span className={styles.dot}></span>
                             SECURE CONNECTION ACTIVE
@@ -102,8 +116,13 @@ export default function Dashboard() {
 
             <QuickActionsFab
                 onRefresh={async () => {
-                    await messageService.sync();
-                    setTimeout(loadData, 2000);
+                    try {
+                        await messageService.sync();
+                    } catch {
+                        // sync returns non-JSON sometimes — safe to ignore
+                    }
+                    // Wait 2s for backend to process, then force refresh
+                    setTimeout(() => loadData(user?.email || getEmailFromToken() || undefined), 2000);
                 }}
                 onNewTask={() => setIsModalOpen(true)}
                 onCleanup={async () => {
@@ -123,4 +142,18 @@ export default function Dashboard() {
             />
         </div>
     );
+}
+
+// Decodes email directly from JWT stored in localStorage
+// so we don't have to wait for AuthContext to be ready
+function getEmailFromToken(): string | null {
+    try {
+        const token = localStorage.getItem('jwt_token');
+        if (!token) return null;
+        const payload = token.split('.')[1];
+        const decoded = JSON.parse(atob(payload));
+        return decoded.sub || decoded.email || null;
+    } catch {
+        return null;
+    }
 }
