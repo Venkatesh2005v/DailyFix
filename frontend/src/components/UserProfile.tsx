@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { User } from '@/types';
-import { API_URL } from '@/services/api';
 import styles from './UserProfile.module.css';
+
+const BACKEND_URL = 'https://dailyfix-ld2d.onrender.com';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface UserProfileProps {
@@ -18,7 +19,7 @@ export default function UserProfile({ user }: UserProfileProps) {
 
     const handleLogout = () => {
         // Redirect to Spring Boot logout
-        window.location.href = `${API_URL}/logout`;
+        window.location.href = `${BACKEND_URL}/logout`;
     };
 
     return (

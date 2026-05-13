@@ -2,8 +2,10 @@
 
 import { useState, useMemo } from 'react';
 import { Task } from '@/types';
-import { API_URL } from '@/services/api';
+import { api } from '@/services/api';
 import styles from './DashboardGrid.module.css';
+
+const BACKEND_URL = 'https://dailyfix-ld2d.onrender.com';
 import { motion, AnimatePresence } from 'framer-motion';
 import TaskItem from '@/components/TaskItem';
 
@@ -51,19 +53,15 @@ export default function DashboardGrid({ highPriorityTasks, stats, onRefresh }: D
     const handleGenerate = async (task: Task) => {
         if (!window.confirm("Initialize Intelligence Draft?")) return;
         try {
-            const res = await fetch(`${API_URL}/api/tasks/${task.id}/generate-reply`, {
-                method: 'GET',
-                credentials: 'include'
-            });
-            if (res.status === 401) {
-                window.location.href = `${API_URL}/oauth2/authorization/google`;
-                return;
-            }
-            const data = await res.json();
-            setDraftReply(data.reply);
+            const data = await api.get(`/tasks/${task.id}/generate-reply`);
+            setDraftReply((data as { reply: string }).reply);
             setReplyTask(task);
             setIsEditing(false);
-        } catch (err) {
+        } catch (err: unknown) {
+            if (err instanceof Error && err.message === 'Unauthorized') {
+                window.location.href = `${BACKEND_URL}/oauth2/authorization/google`;
+                return;
+            }
             alert("Intelligence Service offline.");
         }
     };
@@ -72,13 +70,7 @@ export default function DashboardGrid({ highPriorityTasks, stats, onRefresh }: D
         if (!replyTask) return;
         setIsSending(true);
         try {
-            const res = await fetch(`${API_URL}/api/tasks/${replyTask.id}/send-reply`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ replyText: draftReply }),
-            });
-            if (!res.ok) throw new Error();
+            await api.post(`/tasks/${replyTask.id}/send-reply`, { replyText: draftReply });
             alert("🚀 Intelligence Transmitted!");
             setReplyTask(null);
             onRefresh(replyTask.id);
