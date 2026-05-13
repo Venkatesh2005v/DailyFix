@@ -22,37 +22,37 @@ export default function Dashboard() {
         normalSummary: "Reviewing task directives..."
     });
 
-
-
     const loadData = useCallback(async () => {
-        // 1. Get the token directly from storage as a fallback
         const token = localStorage.getItem('jwt_token');
 
-        // 2. If we don't have a user email OR a token, then we stop. 
-        // Otherwise, let the API call proceed because the Interceptor will add the Bearer token anyway.
-        if (!user?.email && !token) {
-            console.warn("No auth session found.");
+        // If we have no token and no user, we can't fetch anything
+        if (!token && !user?.email) {
+            console.log("Waiting for authentication...");
             return;
         }
 
         try {
             console.log("Fetching intelligence stream...");
+            // Call both services. Pass the email if available, 
+            // but the backend should ideally extract it from the JWT sub.
             const [fetchedTasks, fetchedStats] = await Promise.all([
                 taskService.getMyTasks(null),
-                // Pass null or empty string; your backend should extract email from the JWT sub
-                dashboardService.getStats("")
+                dashboardService.getStats(user?.email || "")
             ]);
 
+            console.log("Data Received:", fetchedStats);
             setTasks(fetchedTasks || []);
-            setStats(fetchedStats);
+            setStats(fetchedStats); // This updates the numeric stats AND summaries
         } catch (error) {
             console.error("Fetch failed:", error);
         }
     }, [user?.email]);
 
+    // Ensure this triggers on mount
     useEffect(() => {
-        if (user?.email) loadData();
-    }, [user?.email, loadData]);
+        loadData();
+    }, [loadData]);
+
 
     const handleTaskAction = async (taskId?: number) => {
         if (taskId) {
