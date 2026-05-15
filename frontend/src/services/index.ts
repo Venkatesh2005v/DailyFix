@@ -49,9 +49,6 @@ export const taskService = {
         await api.post(`/tasks/${id}/dismiss`, { reason });
     },
 
-    create: async (title: string, description: string): Promise<Task> => {
-        return await api.post('/tasks', { title, description });
-    },
 
     archiveCompleted: async (): Promise<void> => {
         await api.post('/tasks/archive-completed', {});

@@ -9,12 +9,10 @@ import { Task, DashboardStats } from '@/types';
 import { taskService, dashboardService, messageService } from '@/services';
 import { useAuth } from '@/context/AuthContext';
 import styles from './page.module.css';
-import NewTaskModal from '@/components/NewTaskModal';
 
 export default function Dashboard() {
     const { user, loading: userLoading } = useAuth();
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [dataLoading, setDataLoading] = useState(true);
 
     // Track previous task count to detect AI-generated additions
@@ -140,19 +138,8 @@ export default function Dashboard() {
                     // Wait 2s for backend to process, then force refresh
                     setTimeout(() => loadData(user?.email || getEmailFromToken() || undefined), 2000);
                 }}
-                onNewTask={() => setIsModalOpen(true)}
                 onCleanup={async () => {
                     await taskService.archiveCompleted();
-                    loadData();
-                }}
-            />
-
-            <NewTaskModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onConfirm={async (t, d) => {
-                    await taskService.create(t, d);
-                    setIsModalOpen(false);
                     loadData();
                 }}
             />

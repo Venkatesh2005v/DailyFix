@@ -7,10 +7,9 @@ import styles from './QuickActionsFab.module.css';
 interface QuickActionsFabProps {
     onRefresh: () => void | Promise<void>;
     onCleanup: () => void | Promise<void>;
-    onNewTask: () => void;
 }
 
-export default function QuickActionsFab({ onRefresh, onCleanup, onNewTask }: QuickActionsFabProps) {
+export default function QuickActionsFab({ onRefresh, onCleanup }: QuickActionsFabProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -33,7 +32,7 @@ export default function QuickActionsFab({ onRefresh, onCleanup, onNewTask }: Qui
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 20 }}
                     >
-                        <button onClick={onNewTask} className={styles.actionBtn}>New Task 📝</button>
+
                         <button onClick={onCleanup} className={styles.actionBtn}>Cleanup 🧹</button>
                         <button
                             onClick={handleRefresh}
