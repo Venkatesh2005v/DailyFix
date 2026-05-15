@@ -13,10 +13,10 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,20 +45,21 @@ public class MessageService {
     private com.google.api.services.gmail.Gmail gmailService;
 
     @Autowired
-    private OAuth2AuthorizedClientManager authorizedClientManager;
+    private final OAuth2AuthorizedClientService authorizedClientService;
 
     public MessageService(MessageRepository messageRepository,
                           PriorityService priorityService,
                           TaskService taskService,
                           UserRepository userRepository,
                           AlertWhitelistRepository alertWhitelistRepository,
-                          SenderProfileRepository senderProfileRepository) {
+                          SenderProfileRepository senderProfileRepository, OAuth2AuthorizedClientService authorizedClientService) {
         this.messageRepository = messageRepository;
         this.priorityService = priorityService;
         this.taskService = taskService;
         this.userRepository = userRepository;
         this.alertWhitelistRepository = alertWhitelistRepository;
         this.senderProfileRepository = senderProfileRepository;
+        this.authorizedClientService = authorizedClientService;
     }
 
 
@@ -78,11 +79,8 @@ public class MessageService {
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found: " + email));
 
-            OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest.withClientRegistrationId("google")
-                    .principal(email)
-                    .build();
-
-            OAuth2AuthorizedClient authorizedClient = authorizedClientManager.authorize(authorizeRequest);
+            OAuth2AuthorizedClient authorizedClient = authorizedClientService
+                    .loadAuthorizedClient("google", email);
 
             if (authorizedClient == null) {
                 System.err.println("CRITICAL: No authorized client found for " + email + ". User must re-login.");
@@ -213,16 +211,18 @@ public class MessageService {
     }
 
     public void sendNewEmail(String to, String subject, String bodyText) {
-        org.springframework.security.core.Authentication authentication =
-                org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        // Get email from SecurityContext (this IS a web request, so it's safe)
+        org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken authentication =
+                (org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken)
+                        org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
 
-        org.springframework.security.oauth2.client.OAuth2AuthorizeRequest authorizeRequest =
-                org.springframework.security.oauth2.client.OAuth2AuthorizeRequest.withClientRegistrationId("google")
-                        .principal(authentication)
-                        .build();
+        if (authentication == null) {
+            throw new RuntimeException("Not authenticated");
+        }
 
-        org.springframework.security.oauth2.client.OAuth2AuthorizedClient authorizedClient =
-                this.authorizedClientManager.authorize(authorizeRequest);
+        // CHANGED: use authorizedClientService directly
+        OAuth2AuthorizedClient authorizedClient = authorizedClientService
+                .loadAuthorizedClient("google", authentication.getName());
 
         if (authorizedClient == null) {
             throw new RuntimeException("Client authorization failed - Try logging out and in.");
@@ -230,8 +230,8 @@ public class MessageService {
 
         String accessToken = authorizedClient.getAccessToken().getTokenValue();
 
+        // Everything below stays exactly the same
         try {
-
             com.google.api.services.gmail.Gmail gmailService = new com.google.api.services.gmail.Gmail.Builder(
                     com.google.api.client.googleapis.javanet.GoogleNetHttpTransport.newTrustedTransport(),
                     com.google.api.client.json.gson.GsonFactory.getDefaultInstance(),
