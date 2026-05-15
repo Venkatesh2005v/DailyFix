@@ -52,9 +52,9 @@ public class AiFallbackService {
                         "https://api.groq.com/openai/v1/chat/completions",
                         "llama-3.3-70b-versatile", groqKey, ProviderType.GROQ),
 
-                new AiProvider("groq-mixtral",
+                new AiProvider("groq-fast",
                         "https://api.groq.com/openai/v1/chat/completions",
-                        "mixtral-8x7b-32768", groqKey, ProviderType.GROQ),
+                        "llama-3.1-8b-instant", groqKey, ProviderType.GROQ),
 
                 new AiProvider("mistral",
                         "https://api.mistral.ai/v1/chat/completions",
