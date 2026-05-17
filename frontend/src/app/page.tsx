@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import styles from './landing.module.css';
+import OnboardingModal from '@/components/OnboardingModal';
 
 const BACKEND_URL = 'https://dailyfix-backend-15uv.onrender.com';
 const HEALTH_URL = `${BACKEND_URL}/api/health`;
@@ -9,6 +10,7 @@ const RETRY_INTERVAL_MS = 3000;
 
 export default function LandingPage() {
     const [isBackendReady, setIsBackendReady] = useState(false);
+    const [isGuideOpen, setIsGuideOpen] = useState(false);
 
     useEffect(() => {
         let intervalId: ReturnType<typeof setInterval> | null = null;
@@ -54,18 +56,28 @@ export default function LandingPage() {
                 <h1 className={styles.logo}>DailyFix</h1>
                 <p className={styles.tagline}>AI-Powered Executive Task Force</p>
 
-                <button
-                    className={styles.googleBtn}
-                    onClick={handleLogin}
-                    disabled={!isBackendReady}
-                >
-                    <img
-                        src="https://www.svgrepo.com/show/475656/google-color.svg"
-                        alt="Google"
-                        className={styles.googleIcon}
-                    />
-                    <span className={styles.btnText}>Continue with Google</span>
-                </button>
+                <div className={styles.btnRow}>
+                    <button
+                        className={styles.googleBtn}
+                        onClick={handleLogin}
+                        disabled={!isBackendReady}
+                    >
+                        <img
+                            src="https://www.svgrepo.com/show/475656/google-color.svg"
+                            alt="Google"
+                            className={styles.googleIcon}
+                        />
+                        <span className={styles.btnText}>Continue with Google</span>
+                    </button>
+
+                    <button
+                        className={styles.guideBtn}
+                        onClick={() => setIsGuideOpen(true)}
+                        aria-label="Open first time setup guide"
+                    >
+                        🚀 First Time Setup Guide
+                    </button>
+                </div>
 
                 {!isBackendReady && (
                     <div className={styles.warmupRow}>
@@ -74,6 +86,8 @@ export default function LandingPage() {
                     </div>
                 )}
             </div>
+
+            <OnboardingModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
         </main>
     );
 }
