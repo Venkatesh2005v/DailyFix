@@ -1,24 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@500&display=swap');
 
+/* ── Page shell ──────────────────────────────────────────── */
 .dashboardWrapper {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    width: 100vw;
+    min-height: 100vh;
+    width: 100%;
     background-color: #0a0a0a;
     color: #e4e4e7;
-    overflow: hidden;
+    /* Allow vertical scroll; block horizontal */
+    overflow-x: hidden;
+    overflow-y: auto;
     font-family: 'Inter', sans-serif;
 }
 
+/* ── Sticky header ───────────────────────────────────────── */
 .header {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(10, 10, 10, 0.85);
+    background: rgba(10, 10, 10, 0.92);
     backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 1rem 2.5rem;
+    padding: clamp(0.6rem, 2vw, 1rem) clamp(1rem, 4vw, 2.5rem);
 }
 
 .headerContent {
@@ -27,29 +32,38 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
+    /* Prevent content touching edges on ultra-wide */
+    width: 100%;
 }
 
-/* --- THE LOGO: DAILY FIX --- */
+/* ── Logo ────────────────────────────────────────────────── */
 .title {
     font-family: 'Inter', sans-serif;
-    font-size: 2.2rem;
+    font-size: clamp(1.3rem, 4vw, 2.2rem);
     font-weight: 700;
     letter-spacing: 1px;
     margin: 0;
     text-transform: uppercase;
-
-    /* Metallic/Chrome Gradient */
     background: linear-gradient(to bottom, #ffffff 40%, #71717a 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1));
+    /* Prevent wrapping on small screens */
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .userGreeting {
-    font-size: 0.85rem;
+    font-size: clamp(0.7rem, 2vw, 0.85rem);
     color: #a1a1aa;
     margin-top: 2px;
     font-weight: 500;
+    /* Truncate long names */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 22ch;
 }
 
 .statusBadge {
@@ -57,11 +71,16 @@
     align-items: center;
     gap: 8px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem;
+    font-size: clamp(0.5rem, 1.2vw, 0.6rem);
     font-weight: 700;
     color: #52525b;
     margin-top: 6px;
     letter-spacing: 0.2em;
+    /* Hide on very small screens to avoid clutter */
+}
+
+@media (max-width: 400px) {
+    .statusBadge { display: none; }
 }
 
 .dot {
@@ -71,6 +90,7 @@
     border-radius: 50%;
     position: relative;
     box-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
+    flex-shrink: 0;
 }
 
 .dot::after {
@@ -84,33 +104,42 @@
 }
 
 @keyframes pulse {
-    0% {
-        transform: scale(1);
-        opacity: 0.8;
-    }
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(3.5); opacity: 0; }
+}
 
-    100% {
-        transform: scale(3.5);
-        opacity: 0;
+/* ── Metric cards row ────────────────────────────────────── */
+.metricsRow {
+    display: grid;
+    /* 3 cols on desktop, 2 on tablet, 1 on mobile */
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(12px, 2.5vw, 20px);
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
+    margin-top: clamp(1rem, 3vw, 2rem);
+}
+
+@media (max-width: 900px) {
+    .metricsRow {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-/* --- METRIC CARDS --- */
-.metricsRow {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding: 0 2.5rem;
-    margin-top: 2rem;
+@media (max-width: 500px) {
+    .metricsRow {
+        grid-template-columns: 1fr;
+    }
 }
 
 .metricCard {
     background: #111112;
-    padding: 24px;
+    padding: clamp(14px, 3vw, 24px);
     border-radius: 12px;
     border: 1px solid #1e1e1f;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Prevent content overflow */
+    overflow: hidden;
+    min-width: 0;
 }
 
 .metricCard:hover {
@@ -126,7 +155,7 @@
 }
 
 .label {
-    font-size: 0.7rem;
+    font-size: clamp(0.6rem, 1.5vw, 0.7rem);
     color: #71717a;
     text-transform: uppercase;
     letter-spacing: 1.5px;
@@ -135,7 +164,7 @@
 
 .value {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 2.5rem;
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
     font-weight: 600;
     margin: 8px 0 0 0;
 }
@@ -145,20 +174,28 @@
     text-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
 }
 
-/* --- INTELLIGENCE PANELS --- */
+/* ── Summary / Intelligence panels ──────────────────────── */
 .summaryRow {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    padding: 0 2.5rem;
-    margin-top: 24px;
+    gap: clamp(12px, 3vw, 24px);
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
+    margin-top: clamp(12px, 2.5vw, 24px);
+}
+
+@media (max-width: 700px) {
+    .summaryRow {
+        grid-template-columns: 1fr;
+    }
 }
 
 .summaryPanel {
     background: #111112;
-    padding: 24px;
+    padding: clamp(14px, 3vw, 24px);
     border-radius: 12px;
     border: 1px solid #1e1e1f;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .panelHeader {
@@ -168,10 +205,11 @@
     margin-bottom: 16px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.03);
     padding-bottom: 12px;
+    flex-wrap: wrap;
 }
 
 .summaryPanel h3 {
-    font-size: 0.75rem;
+    font-size: clamp(0.65rem, 1.5vw, 0.75rem);
     text-transform: uppercase;
     letter-spacing: 1.5px;
     color: #71717a;
@@ -179,27 +217,27 @@
 }
 
 .summaryPanel p {
-    font-size: 0.9rem;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
     line-height: 1.7;
     color: #d4d4d8;
     margin: 0;
+    /* Allow long text to wrap, not overflow */
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
-.intelligencePanel {
-    border-top: 3px solid #f59e0b;
-}
+.intelligencePanel { border-top: 3px solid #f59e0b; }
+.workloadPanel     { border-top: 3px solid #6366f1; }
 
-.workloadPanel {
-    border-top: 3px solid #6366f1;
-}
-
-/* --- CONTROL BAR (Sides) --- */
+/* ── Control bar ─────────────────────────────────────────── */
 .controlBar {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    padding: 0 2.5rem;
-    margin-top: 30px;
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
+    margin-top: clamp(16px, 3vw, 30px);
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .filterGroup,
@@ -209,12 +247,10 @@
     gap: 8px;
 }
 
-.sortGroup {
-    align-items: flex-end;
-}
+.sortGroup { align-items: flex-end; }
 
 .miniLabel {
-    font-size: 0.6rem;
+    font-size: clamp(0.55rem, 1.2vw, 0.6rem);
     text-transform: uppercase;
     color: #52525b;
     font-weight: 800;
@@ -223,19 +259,24 @@
 
 .pillContainer {
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
 }
 
 .pill {
     background: #18181b;
     border: 1px solid #27272a;
     color: #71717a;
-    padding: 6px 14px;
+    padding: clamp(4px, 1vw, 6px) clamp(10px, 2vw, 14px);
     border-radius: 4px;
-    font-size: 0.7rem;
+    font-size: clamp(0.65rem, 1.5vw, 0.7rem);
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s;
+    /* Minimum tap target */
+    min-height: 36px;
+    display: flex;
+    align-items: center;
 }
 
 .activePill {
@@ -246,7 +287,7 @@
 
 .selectWrapper {
     position: relative;
-    width: 180px;
+    width: clamp(130px, 20vw, 180px);
 }
 
 .customSelect {
@@ -256,13 +297,15 @@
     background: #18181b;
     border: 1px solid #27272a;
     color: #e4e4e7;
-    padding: 8px 12px;
+    padding: clamp(6px, 1.5vw, 8px) 12px;
     border-radius: 4px;
-    font-size: 0.75rem;
+    font-size: clamp(0.7rem, 1.5vw, 0.75rem);
     font-weight: 600;
     cursor: pointer;
     outline: none;
 }
+
+.customSelect:focus { border-color: #6366f1; }
 
 .selectArrow {
     position: absolute;
@@ -273,23 +316,27 @@
     pointer-events: none;
 }
 
-/* --- MAIN SCROLL AREA --- */
+/* ── Main scroll area ────────────────────────────────────── */
 .mainContent {
     flex: 1;
     overflow-y: auto;
-    padding-bottom: 4rem;
+    overflow-x: hidden;
+    padding-bottom: clamp(4rem, 8vw, 6rem);
     scroll-behavior: smooth;
 }
 
-.mainContent::-webkit-scrollbar {
-    width: 5px;
-}
+.mainContent::-webkit-scrollbar        { width: 4px; }
+.mainContent::-webkit-scrollbar-thumb  { background: #27272a; border-radius: 10px; }
+.mainContent::-webkit-scrollbar-thumb:hover { background: #6366f1; }
 
-.mainContent::-webkit-scrollbar-thumb {
-    background: #27272a;
-    border-radius: 10px;
-}
-
-.mainContent::-webkit-scrollbar-thumb:hover {
-    background: #6366f1;
+/* ── Ultra-wide cap ──────────────────────────────────────── */
+@media (min-width: 1800px) {
+    .headerContent,
+    .metricsRow,
+    .summaryRow,
+    .controlBar {
+        max-width: 1600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
 }

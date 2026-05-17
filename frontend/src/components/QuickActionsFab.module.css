@@ -1,34 +1,36 @@
+/* ── FAB container ───────────────────────────────────────── */
 .container {
     position: fixed;
-    bottom: 2rem;
-    right: 2rem;
+    /* Responsive bottom/right margins */
+    bottom: clamp(1rem, 4vw, 2rem);
+    right: clamp(1rem, 4vw, 2rem);
     display: flex;
     flex-direction: column-reverse;
-    /* Menu opens upwards */
     align-items: flex-end;
-    gap: 1rem;
+    gap: clamp(0.6rem, 2vw, 1rem);
     z-index: 100;
 }
 
+/* ── FAB button ──────────────────────────────────────────── */
 .fab {
-    width: 60px;
-    height: 60px;
+    /* Slightly smaller on mobile for thumb comfort */
+    width: clamp(50px, 8vw, 60px);
+    height: clamp(50px, 8vw, 60px);
     border-radius: 50%;
     background: var(--color-indigo);
     border: none;
     color: white;
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
     cursor: pointer;
     box-shadow: 0 4px 20px var(--color-indigo-glow);
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0;
 }
 
-.fab:hover {
-    transform: scale(1.1);
-}
+.fab:hover { transform: scale(1.1); }
 
 .fab.active {
     transform: rotate(45deg);
@@ -36,25 +38,32 @@
     box-shadow: 0 4px 20px var(--priority-high-glow);
 }
 
+/* ── Action menu ─────────────────────────────────────────── */
 .menu {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: clamp(0.5rem, 2vw, 0.8rem);
     align-items: flex-end;
-    margin-bottom: 1rem;
+    margin-bottom: clamp(0.5rem, 2vw, 1rem);
 }
 
+/* ── Action buttons ──────────────────────────────────────── */
 .actionBtn {
     background: var(--bg-obsidian);
     color: var(--text-primary);
     border: 1px solid var(--border-glass);
-    padding: 0.8rem 1.5rem;
+    padding: clamp(0.6rem, 2vw, 0.8rem) clamp(1rem, 3vw, 1.5rem);
     border-radius: 30px;
     cursor: pointer;
     white-space: nowrap;
     font-weight: 500;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     transition: transform 0.2s;
+    /* Minimum touch target */
+    min-height: 44px;
+    display: flex;
+    align-items: center;
 }
 
 .actionBtn:hover {
@@ -69,6 +78,7 @@
     transform: none;
 }
 
+/* ── Refreshing state ────────────────────────────────────── */
 .refreshing {
     display: flex;
     align-items: center;
@@ -87,6 +97,12 @@
     flex-shrink: 0;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── On very small screens hide text labels, show only FAB ── */
+@media (max-width: 360px) {
+    .actionBtn {
+        padding: 0.6rem 1rem;
+        font-size: 0.75rem;
+    }
 }

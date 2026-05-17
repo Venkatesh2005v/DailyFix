@@ -1,26 +1,38 @@
+/* ── Container ───────────────────────────────────────────── */
 .container {
-    max-width: 1200px;
+    max-width: min(1200px, 100%);
     margin: 0 auto;
-    padding: 20px;
+    padding: clamp(12px, 3vw, 20px);
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: clamp(16px, 3vw, 30px);
+    overflow-x: hidden;
 }
 
-/* Interactive Metric Cards */
+/* ── Metric cards grid ───────────────────────────────────── */
 .metricsRow {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: clamp(10px, 2.5vw, 20px);
+}
+
+@media (max-width: 900px) {
+    .metricsRow { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 500px) {
+    .metricsRow { grid-template-columns: 1fr; }
 }
 
 .metricCard {
     background: rgba(255, 255, 255, 0.05);
-    padding: 20px;
+    padding: clamp(12px, 3vw, 20px);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     cursor: pointer;
     transition: all 0.2s;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .metricCard:hover {
@@ -35,28 +47,32 @@
 
 .label {
     color: #888;
-    font-size: 0.8rem;
+    font-size: clamp(0.65rem, 1.5vw, 0.8rem);
     margin: 0;
     text-transform: uppercase;
 }
 
 .value {
-    font-size: 2rem;
+    font-size: clamp(1.6rem, 4vw, 2rem);
     font-weight: bold;
     margin: 5px 0 0 0;
+    /* Truncate if necessary */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.urgentText {
-    color: #ff4d4d;
-}
+.urgentText { color: #ff4d4d; }
 
-/* Control Bar: Pushed to Sides */
+/* ── Control Bar ─────────────────────────────────────────── */
 .controlBar {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     margin-top: 10px;
     padding: 0 4px;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .filterGroup,
@@ -66,12 +82,10 @@
     gap: 8px;
 }
 
-.sortGroup {
-    align-items: flex-end;
-}
+.sortGroup { align-items: flex-end; }
 
 .miniLabel {
-    font-size: 0.65rem;
+    font-size: clamp(0.55rem, 1.2vw, 0.65rem);
     text-transform: uppercase;
     color: #71717a;
     font-weight: 700;
@@ -80,19 +94,23 @@
 
 .pillContainer {
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
 }
 
 .pill {
     background: #18181b;
     border: 1px solid #27272a;
     color: #a1a1aa;
-    padding: 6px 14px;
+    padding: clamp(4px, 1vw, 6px) clamp(10px, 2vw, 14px);
     border-radius: 4px;
-    font-size: 0.75rem;
+    font-size: clamp(0.65rem, 1.5vw, 0.75rem);
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
 }
 
 .activePill {
@@ -101,31 +119,28 @@
     color: white;
 }
 
-/* Custom Styled Dropdown */
+/* ── Custom select ───────────────────────────────────────── */
 .selectWrapper {
     position: relative;
-    width: 160px;
+    width: clamp(120px, 18vw, 160px);
 }
 
 .customSelect {
     appearance: none;
-    /* Hide default arrow */
     -webkit-appearance: none;
     width: 100%;
     background: #18181b;
     border: 1px solid #27272a;
     color: #e4e4e7;
-    padding: 8px 12px;
+    padding: clamp(6px, 1.5vw, 8px) 12px;
     border-radius: 4px;
-    font-size: 0.8rem;
+    font-size: clamp(0.7rem, 1.5vw, 0.8rem);
     font-weight: 700;
     cursor: pointer;
     outline: none;
 }
 
-.customSelect:focus {
-    border-color: #6366f1;
-}
+.customSelect:focus { border-color: #6366f1; }
 
 .selectArrow {
     position: absolute;
@@ -137,7 +152,7 @@
     font-size: 0.8rem;
 }
 
-
+/* ── Task detail modal overlay ───────────────────────────── */
 .modalOverlay {
     position: fixed;
     inset: 0;
@@ -147,88 +162,87 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    padding: 1rem;
 }
 
 .modalContent {
     background: #1a1a1b;
     border: 1px solid #333;
     border-radius: 16px;
-    width: 90%;
+    width: 100%;
     max-width: 600px;
-    padding: 24px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: clamp(16px, 4vw, 24px);
 }
 
 .previewBox,
 .editor {
     width: 100%;
-    min-height: 200px;
+    min-height: clamp(120px, 25vw, 200px);
     background: #0f0f10;
     border: 1px solid #2d2d2f;
     border-radius: 12px;
-    padding: 20px;
+    padding: clamp(12px, 3vw, 20px);
     color: #e4e4e7;
     line-height: 1.6;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .editor {
     border-color: #6366f1;
     outline: none;
+    resize: vertical;
 }
 
 .modalActions {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    margin-top: 24px;
+    gap: clamp(8px, 2vw, 12px);
+    margin-top: clamp(16px, 3vw, 24px);
+    flex-wrap: wrap;
 }
 
-.sendBtn {
-    background: #6366f1;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.editBtn {
-    background: #5e9a51;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-
-}
-
+.sendBtn,
+.editBtn,
 .cancelBtn {
-    background: #ed2f2f;
-    color: white;
-    padding: 10px 20px;
+    padding: clamp(8px, 2vw, 10px) clamp(14px, 3vw, 20px);
     border-radius: 8px;
     border: none;
     font-weight: 600;
     cursor: pointer;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    min-height: 40px;
+    white-space: nowrap;
 }
 
+.sendBtn   { background: #6366f1; color: white; }
+.editBtn   { background: #5e9a51; color: white; }
+.cancelBtn { background: #ed2f2f; color: white; }
+
+/* ── Summary panels row ──────────────────────────────────── */
 .summaryRow {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    gap: clamp(12px, 3vw, 24px);
     margin-bottom: 10px;
+}
+
+@media (max-width: 700px) {
+    .summaryRow { grid-template-columns: 1fr; }
 }
 
 .summaryPanel {
     background: #141415;
-    padding: 24px;
+    padding: clamp(14px, 3vw, 24px);
     border-radius: 12px;
     border: 1px solid #27272a;
     position: relative;
     box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.02);
+    min-width: 0;
+    overflow: hidden;
 }
-
 
 .panelHeader {
     display: flex;
@@ -237,14 +251,13 @@
     margin-bottom: 16px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     padding-bottom: 12px;
+    flex-wrap: wrap;
 }
 
-.panelIcon {
-    font-size: 1.1rem;
-}
+.panelIcon { font-size: clamp(1rem, 2vw, 1.1rem); }
 
 .summaryPanel h3 {
-    font-size: 0.75rem;
+    font-size: clamp(0.65rem, 1.5vw, 0.75rem);
     text-transform: uppercase;
     letter-spacing: 2px;
     color: #71717a;
@@ -253,31 +266,20 @@
 }
 
 .summaryPanel p {
-    font-size: 0.9rem;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
     line-height: 1.7;
     color: #d4d4d8;
     margin: 0;
     font-weight: 400;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
+.intelligencePanel { border-top: 3px solid #f59e0b; }
+.intelligencePanel .panelIcon { color: #f59e0b; }
 
-.intelligencePanel {
-    border-top: 3px solid #f59e0b;
-}
-
-.intelligencePanel .panelIcon {
-    color: #f59e0b;
-}
-
-
-.workloadPanel {
-    border-top: 3px solid #6366f1;
-}
-
-.workloadPanel .panelIcon {
-    color: #6366f1;
-}
-
+.workloadPanel { border-top: 3px solid #6366f1; }
+.workloadPanel .panelIcon { color: #6366f1; }
 
 .summaryPanel:hover {
     border-color: #3f3f46;

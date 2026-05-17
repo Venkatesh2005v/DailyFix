@@ -4,21 +4,16 @@
   --bg-glass: rgba(20, 20, 20, 0.7);
   --border-glass: rgba(255, 255, 255, 0.1);
 
-
   --color-indigo: #6366F1;
   --color-indigo-glow: rgba(99, 102, 241, 0.5);
 
-
   --priority-high: #F43F5E;
-  /* Ruby Neon */
   --priority-high-glow: rgba(244, 63, 94, 0.4);
 
   --priority-medium: #F59E0B;
-  /* Amber Glow */
   --priority-medium-glow: rgba(245, 158, 11, 0.4);
 
   --priority-low: #10B981;
-  /* Emerald Soft */
   --priority-low-glow: rgba(16, 185, 129, 0.4);
 
   /* Typography */
@@ -26,20 +21,39 @@
   --text-primary: #FFFFFF;
   --text-secondary: rgba(255, 255, 255, 0.6);
   --text-tertiary: rgba(255, 255, 255, 0.4);
+
+  /* Fluid spacing scale */
+  --space-xs: clamp(0.25rem, 1vw, 0.5rem);
+  --space-sm: clamp(0.5rem, 2vw, 1rem);
+  --space-md: clamp(1rem, 3vw, 1.5rem);
+  --space-lg: clamp(1.5rem, 4vw, 2.5rem);
+  --space-xl: clamp(2rem, 5vw, 3.5rem);
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+}
+
+html {
+  /* Prevent layout shifts from scrollbar */
+  scrollbar-gutter: stable;
 }
 
 body {
   background-color: var(--bg-obsidian);
   color: var(--text-primary);
   font-family: var(--font-primary);
+  /* Prevent horizontal overflow globally */
   overflow-x: hidden;
   min-height: 100vh;
+  /* Improve text rendering on all devices */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -47,7 +61,16 @@ a {
   text-decoration: none;
 }
 
-/* Glassmorphism Utilities */
+/* ── Fluid typography helpers ────────────────────────────── */
+.fluid-title {
+  font-size: clamp(1.25rem, 4vw, 2.2rem);
+}
+
+.fluid-body {
+  font-size: clamp(0.8rem, 2vw, 1rem);
+}
+
+/* ── Glassmorphism Utility ───────────────────────────────── */
 .glass-panel {
   background: var(--bg-glass);
   backdrop-filter: blur(12px);
@@ -57,9 +80,17 @@ a {
   border-radius: 16px;
 }
 
-/* Animations will be handled by Framer Motion, but base classes here */
+/* ── Page container ─────────────────────────────────────── */
 .page-container {
-  padding: 2rem;
-  max-width: 1200px;
+  padding: clamp(1rem, 3vw, 2rem);
+  max-width: min(1200px, 100%);
   margin: 0 auto;
+}
+
+/* ── Prevent img/video overflow ─────────────────────────── */
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
 }

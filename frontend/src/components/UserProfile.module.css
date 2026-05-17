@@ -1,20 +1,27 @@
+/* ── UserProfile dropdown ────────────────────────────────── */
 .container {
     position: relative;
     z-index: 50;
+    flex-shrink: 0;
 }
 
+/* ── Avatar trigger button ───────────────────────────────── */
 .avatarBtn {
     background: none;
     border: 2px solid var(--color-indigo);
     border-radius: 50%;
     padding: 2px;
     cursor: pointer;
-    width: 44px;
-    height: 44px;
+    /* Responsive size: 40px on mobile → 44px on desktop */
+    width: clamp(40px, 8vw, 44px);
+    height: clamp(40px, 8vw, 44px);
     display: flex;
     justify-content: center;
     align-items: center;
     transition: all 0.2s;
+    /* Minimum WCAG tap target */
+    min-width: 40px;
+    min-height: 40px;
 }
 
 .avatarBtn:hover {
@@ -28,46 +35,55 @@
     object-fit: cover;
 }
 
+/* ── Dropdown panel ──────────────────────────────────────── */
 .dropdown {
     position: absolute;
     top: 120%;
     right: 0;
-    width: 200px;
+    /* Fluid width: narrower on small screens */
+    width: clamp(160px, 50vw, 220px);
     background: var(--bg-obsidian);
     border: 1px solid var(--border-glass);
     border-radius: 12px;
     padding: 0.5rem;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    /* Prevent overflow past right edge on mobile */
+    max-width: calc(100vw - 2rem);
 }
 
-.userInfo {
-    padding: 0.8rem;
-}
+/* ── User info section ───────────────────────────────────── */
+.userInfo { padding: 0.8rem; }
 
 .userName {
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .userEmail {
-    font-size: 0.75rem;
+    font-size: clamp(0.65rem, 1.5vw, 0.75rem);
     color: var(--text-secondary);
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
+/* ── Divider ─────────────────────────────────────────────── */
 .divider {
     height: 1px;
     background: var(--border-glass);
     margin: 0.5rem 0;
 }
 
+/* ── Menu items ──────────────────────────────────────────── */
 .menuItem {
     display: block;
     width: 100%;
     text-align: left;
-    padding: 0.6rem 0.8rem;
-    font-size: 0.9rem;
+    padding: clamp(0.5rem, 2vw, 0.6rem) 0.8rem;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
     color: var(--text-secondary);
     cursor: pointer;
     border-radius: 8px;
@@ -75,6 +91,10 @@
     background: none;
     border: none;
     text-decoration: none;
+    /* Minimum touch target */
+    min-height: 40px;
+    display: flex;
+    align-items: center;
 }
 
 .menuItem:hover {
@@ -82,10 +102,5 @@
     color: white;
 }
 
-.logout {
-    color: var(--priority-high);
-}
-
-.logout:hover {
-    background: rgba(244, 63, 94, 0.1);
-}
+.logout             { color: var(--priority-high); }
+.logout:hover       { background: rgba(244, 63, 94, 0.1); }

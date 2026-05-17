@@ -1,16 +1,19 @@
+/* ── Summary panel ───────────────────────────────────────── */
 .panel {
     background: var(--bg-glass);
     border: 1px solid var(--border-glass);
     border-radius: 16px;
-    padding: 2rem;
+    padding: clamp(1.25rem, 4vw, 2rem);
     flex: 1;
-    min-height: 250px;
+    min-width: 0; /* Prevent flex blowout */
+    min-height: clamp(160px, 25vw, 250px);
     display: flex;
     flex-direction: column;
     transition: all 0.3s ease;
+    overflow: hidden;
 }
 
-/* Variants */
+/* ── Colour variants ─────────────────────────────────────── */
 .indigo {
     background: rgba(99, 102, 241, 0.1);
     border-color: rgba(99, 102, 241, 0.3);
@@ -22,8 +25,9 @@
     border-color: rgba(148, 163, 184, 0.2);
 }
 
+/* ── Panel title ─────────────────────────────────────────── */
 .title {
-    font-size: 1.1rem;
+    font-size: clamp(0.85rem, 2vw, 1.1rem);
     font-weight: 600;
     color: var(--color-indigo);
     margin-bottom: 1rem;
@@ -32,21 +36,20 @@
     gap: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 1px;
+    flex-wrap: wrap;
 }
 
+/* ── Panel body ──────────────────────────────────────────── */
 .content {
     color: var(--text-secondary);
     line-height: 1.6;
     font-family: 'Courier New', monospace;
-    /* Executive tech feel */
     flex-grow: 1;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
-/* Variant Specific Text Colors */
-.indigo .title {
-    color: #818cf8;
-}
-
-.slate .title {
-    color: #94a3b8;
-}
+/* ── Variant title colours ───────────────────────────────── */
+.indigo .title { color: #818cf8; }
+.slate .title  { color: #94a3b8; }

@@ -1,3 +1,4 @@
+/* ── Task card ───────────────────────────────────────────── */
 .card {
     position: relative;
     background: #1e1e1e;
@@ -7,101 +8,119 @@
     overflow: hidden;
     margin-bottom: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Prevent content from overflowing card */
+    min-width: 0;
 }
 
+/* ── Priority stripe ─────────────────────────────────────── */
 .priorityIndicator {
     width: 4px;
     flex-shrink: 0;
 }
 
-.priorityIndicator.high {
-    background-color: #ef4444;
-}
+.priorityIndicator.high   { background-color: #ef4444; }
+.priorityIndicator.medium { background-color: #f59e0b; }
+.priorityIndicator.low    { background-color: #10b981; }
 
-.priorityIndicator.medium {
-    background-color: #f59e0b;
-}
-
-.priorityIndicator.low {
-    background-color: #10b981;
-}
-
+/* ── Main content area ───────────────────────────────────── */
 .mainContent {
-    padding: 16px;
+    padding: clamp(12px, 3vw, 16px);
     flex-grow: 1;
+    min-width: 0; /* Allow text to wrap inside flex child */
 }
 
+/* ── Card header ─────────────────────────────────────────── */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 8px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .titleArea {
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    flex: 1;
 }
 
 .title {
     margin: 0;
-    font-size: 1rem;
+    font-size: clamp(0.875rem, 2.5vw, 1rem);
     font-weight: 600;
     color: #fff;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .timestamp {
-    font-size: 0.75rem;
+    font-size: clamp(0.65rem, 1.5vw, 0.75rem);
     color: #888;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
+/* ── Body text ───────────────────────────────────────────── */
 .description {
-    font-size: 0.9rem;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
     color: #ccc;
     line-height: 1.5;
     margin-bottom: 12px;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .sourceInfo {
     margin-bottom: 16px;
     color: #666;
+    font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
-/* --- BUTTON GROUP STYLING --- */
+/* ── Button group ────────────────────────────────────────── */
 .buttonGroup {
     display: flex;
-    gap: 10px;
+    gap: clamp(6px, 2vw, 10px);
     padding-top: 12px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
+    flex-wrap: wrap;
 }
 
 .buttonGroup button {
-    padding: 8px 14px;
+    padding: clamp(6px, 2vw, 8px) clamp(10px, 2.5vw, 14px);
     border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: clamp(0.75rem, 2vw, 0.85rem);
     font-weight: 600;
     border: none;
     cursor: pointer;
     transition: all 0.2s ease;
+    /* Minimum tap target for touch */
+    min-height: 40px;
+    white-space: nowrap;
 }
 
 .aiBtn {
     background: linear-gradient(135deg, #6366f1, #a855f7);
     color: white;
     flex: 2;
-    /* AI button stands out more */
+    min-width: 0;
 }
 
 .completeBtn {
     background: #059669;
     color: white;
     flex: 1;
+    min-width: 0;
 }
 
 .dismissBtn {
     background: #374151;
     color: white;
     flex: 1;
+    min-width: 0;
 }
 
 .buttonGroup button:hover {
@@ -109,6 +128,17 @@
     transform: translateY(-1px);
 }
 
-.buttonGroup button:active {
-    transform: translateY(0);
+.buttonGroup button:active { transform: translateY(0); }
+
+/* ── Stack buttons on very narrow cards ──────────────────── */
+@media (max-width: 400px) {
+    .buttonGroup {
+        flex-direction: column;
+    }
+    .aiBtn,
+    .completeBtn,
+    .dismissBtn {
+        flex: unset;
+        width: 100%;
+    }
 }
